@@ -1,6 +1,6 @@
 services:
   hannibaltutu-miner:
-    image: ghcr.io/thelion81/hannibaltutu-nas-miner:1.0.0
+    image: ghcr.io/thelion1981/hannibaltutu-nas-miner:1.0.0
     container_name: hannibaltutu-miner
     restart: unless-stopped
     pull_policy: always
