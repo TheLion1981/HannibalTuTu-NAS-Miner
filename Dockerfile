@@ -3,6 +3,7 @@
 FROM debian:bookworm-slim AS builder
 
 ARG XMRIG_REF=master
+ARG UPSTREAM_REFRESH=manual
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
@@ -18,16 +19,17 @@ RUN apt-get update \
 
 WORKDIR /src
 
-# Build directly from the official MoneroOcean XMRig fork.
-RUN git clone https://github.com/MoneroOcean/xmrig.git xmrig \
+# UPSTREAM_REFRESH is intentionally consumed here so scheduled GitHub builds
+# re-fetch MoneroOcean/xmrig even when Docker layer caching is enabled.
+RUN echo "Upstream refresh token: ${UPSTREAM_REFRESH}" \
+    && git clone https://github.com/MoneroOcean/xmrig.git xmrig \
     && cd xmrig \
     && git fetch --tags --force \
     && git checkout "${XMRIG_REF}" \
     && git rev-parse HEAD > /tmp/xmrig-commit
 
-# The project deliberately ships with 0% XMRig developer donation.
-# Verify/force that setting at source level so a future upstream default
-# cannot silently change the behavior of this image.
+# Hannibal_TuTu keeps the original XMRig developer donation at 0%.
+# v1.1 adds its own clearly documented 1% project fee in entrypoint.sh.
 RUN cd /src/xmrig \
     && sed -ri 's/(kDefaultDonateLevel[[:space:]]*=[[:space:]]*)[0-9]+/\10/' src/donate.h \
     && sed -ri 's/(kMinimumDonateLevel[[:space:]]*=[[:space:]]*)[0-9]+/\10/' src/donate.h \

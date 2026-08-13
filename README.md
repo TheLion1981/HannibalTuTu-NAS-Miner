@@ -1,144 +1,167 @@
-# Hannibal_TuTu NAS Miner v1.0
+# 🐔 Hannibal_TuTu NAS Miner v1.1
 
-**Een eenvoudige MoneroOcean CPU-miner voor Synology NAS, gemaakt door TheLion81 & Hannibal_TuTu.**
+**Beginner-friendly MoneroOcean CPU mining for Synology NAS.**  
+Created by **TheLion1981 & Hannibal_TuTu**.
 
-Doel: *minen voor beginners*. Geen losse XMRig-downloads, geen handmatig `config.json` bouwen en geen ingewikkelde commandoregels.
+Turn spare NAS CPU time into XMR without manually downloading XMRig, creating `config.json`, or learning Docker command lines.
 
-## Wat doet v1.0?
+## Why use it?
 
-- Gebruikt de **MoneroOcean XMRig-fork** voor profit/algo switching.
-- Bouwt de image vanuit de MoneroOcean-broncode.
-- **0% XMRig developer donation** in v1.0.
-- Uitbetaling blijft naar jouw eigen **Monero XMR-wallet** gaan.
-- Wallet, workernaam en aantal threads zijn de enige belangrijke instellingen.
-- Container herstart automatisch na een NAS/container-restart.
-- De GHCR-image wordt door GitHub Actions opnieuw opgebouwd vanuit de actuele MoneroOcean-fork.
+- 🚀 **MoneroOcean profit/algo switching**
+- 🔄 **Fresh upstream builds** from the current MoneroOcean XMRig fork
+- 🐳 Built for **Synology Container Manager** on `amd64/x86-64`
+- ⚙️ Only three beginner settings: **wallet, worker name, threads**
+- ❤️ **0% original XMRig developer donation**
+- 👧 **Transparent 1% Hannibal_TuTu project fee**
+- 🔓 Open source: the fee wallet and implementation are visible in this repository
+- ♻️ `restart: unless-stopped` and `pull_policy: always`
 
-> Dit project garandeert geen winst. Mining gebruikt extra stroom en belast de CPU. Gebruik het alleen op hardware en stroom waarvoor je toestemming hebt.
+> Mining uses CPU time and electricity. Profit is not guaranteed. Only mine on hardware and electricity you are allowed to use.
 
-## Voor wie?
+---
 
-v1.0 is gericht op **Synology Container Manager op amd64/x86-64 NAS-systemen**, zoals de DS224+ met Intel Celeron J4125.
+## 👧 What is the 1% project fee?
 
-## Super simpele installatie op Synology
+v1.1 includes a **transparent project fee of approximately 1% of mining time** for Hannibal_TuTu.
 
-### 1. Installeer Container Manager
+The miner runs:
 
-Open **Package Center** en installeer **Container Manager** als dat nog niet aanwezig is.
+- **99 minutes** to your own wallet
+- **1 minute** to the Hannibal_TuTu project wallet
+- then repeats the cycle
 
-### 2. Open Container Manager
+Project fee wallet:
 
-Ga naar:
+```text
+43dwfyZ638dGaVaqBE8sYUCViionyhKVwVNHK2i3TXkMK68xEZZbxcbiiZqoCKxJKbN4mRxE1oFdniNfzeiQAaxkF1i2NwM
+```
 
-**Project → Maken**
+The fee is announced in the container log at startup and whenever the fee window starts. XMRig's original developer donation remains **0%**.
 
-Gebruik bijvoorbeeld:
+Because switching wallets requires a pool reconnect, actual accepted-share percentage can differ slightly from exactly 1%.
 
-- Projectnaam: `hannibaltutu-miner`
-- Pad: `/docker/hannibaltutu-miner`
-- Bron: **docker-compose.yml aanmaken**
+---
 
-### 3. Plak deze compose
+## 🚀 Synology quick start — mining for beginners
+
+### 1. Install Container Manager
+
+Open Synology **Package Center** and install **Container Manager**.
+
+### 2. Create a project
+
+Go to:
+
+**Container Manager → Project → Create**
+
+Recommended values:
+
+- Project name: `hannibaltutu-nas-miner`
+- Path: `/docker/hannibaltutu-nas-miner`
+- Source: **Create docker-compose.yml**
+
+### 3. Paste this
 
 ```yaml
 services:
   hannibaltutu-miner:
-    image: ghcr.io/thelion81/hannibaltutu-nas-miner:1.0.0
+    image: ghcr.io/thelion1981/hannibaltutu-nas-miner:latest
     container_name: hannibaltutu-miner
     restart: unless-stopped
     pull_policy: always
     environment:
-      WALLET: "VUL_HIER_JE_MONERO_WALLET_IN"
-      WORKER: "Mijn-NAS"
+      WALLET: "YOUR_MONERO_WALLET_HERE"
+      WORKER: "My-NAS"
       THREADS: "3"
       POOL: "gulf.moneroocean.stream:10128"
       PRINT_TIME: "60"
 ```
 
-Pas alleen deze drie regels aan:
+Change only:
 
 ```yaml
-WALLET: "jouw eigen Monero-wallet"
-WORKER: "naam-van-je-nas"
+WALLET: "your own Monero wallet"
+WORKER: "a name for your NAS"
 THREADS: "3"
 ```
 
-### 4. Klik Volgende → Aanmaken
+For a **Synology DS224+ / Intel J4125**, 3 threads has been a good real-world starting point in our testing while normal photo/NAS use remained responsive. Your NAS may differ.
 
-Webportaal/Web Station is **niet nodig**.
+### 4. Create the project
 
-Container Manager haalt de image op en start de miner.
+Click **Next → Create**. No Web Station/web portal is required.
 
-### 5. Controleren
+### 5. Check the log
 
-Ga naar:
+Open:
 
-**Container → hannibaltutu-miner → Logboek**
+**Container → hannibaltutu-miner → Log**
 
-Bij een goede start zie je onder andere:
+A healthy startup shows information similar to:
 
 ```text
-XMRig developer donation: 0%
-Profit/algo switching    : aan
+Makers : TheLion1981 & Hannibal_TuTu
+XMRig developer donation : 0%
+Project fee for Hannah    : 1% mining time
+Profit/algo switching     : ON
 ```
 
-Daarna voert MoneroOcean bij een nieuwe installatie/calibratie benchmarks uit en kiest automatisch een geschikt algoritme.
+MoneroOcean may benchmark multiple algorithms during initial calibration. That is expected.
 
-## Hoeveel threads?
+---
 
-Meer threads is niet automatisch beter. Begin rustig en controleer of DSM soepel blijft werken.
+## 🔄 Updates
 
-Voor onze test-DS224+ bleek **3 threads** een goede balans: de NAS bleef normaal bruikbaar voor foto's en dagelijks gebruik. Dat is een praktijkervaring, geen garantie voor iedere NAS.
+The GitHub Action rebuilds the `latest` image **daily** from the current `MoneroOcean/xmrig` `master` branch. A cache-busting build argument forces the upstream source to be fetched again.
 
-## Updaten
+This means **new installations using `:latest` receive the most recently built image**.
 
-De compose gebruikt `pull_policy: always`. Wanneer je het project opnieuw laat maken/updaten, probeert Container Manager de nieuwste gepubliceerde image te gebruiken.
+Existing running Docker containers cannot replace their own image. To update an existing Synology installation, use Container Manager to stop/recreate or update the project so `pull_policy: always` pulls the current `latest` image.
 
-De GitHub Action bouwt de `latest` image periodiek opnieuw vanuit de actuele MoneroOcean-fork. De versie-tag `1.0.0` blijft bedoeld als stabiele v1.0-release.
+For stability-conscious users, GitHub release/version tags remain available so a deployment can be pinned instead of following `latest`.
 
-Voor absolute reproduceerbaarheid kan een maintainer de build vastzetten op een specifieke MoneroOcean commit via `XMRIG_REF`.
+---
 
-## Waarom 0% donation?
+## Huge Pages and MSR
 
-Officiële XMRig gebruikt standaard een developer donation. Dit project compileert uit broncode en verifieert tijdens de build dat de XMRig-donation op **0%** staat.
+The miner requests Huge Pages and RandomX MSR optimisations, but Synology DSM kernels do not always expose those facilities to containers. This project deliberately does **not** force kernel modifications: NAS stability comes first.
 
-Dit staat los van eventuele pool- of transactiekosten van MoneroOcean/Monero.
+---
 
-### Toekomstige projectfee
+## Build it yourself
 
-v1.0 bevat **geen fee voor TheLion81 of Hannibal_TuTu**.
+The image is built directly from:
 
-Als er later een projectfee komt, willen we die expliciet, zichtbaar en documenteerbaar maken. Geen verborgen wallet en geen stille wijziging. De gebruiker moet kunnen zien wat de fee is en waarvoor die wordt gebruikt.
+```text
+https://github.com/MoneroOcean/xmrig.git
+```
 
-## Huge Pages / MSR op Synology
-
-XMRig kan op sommige systemen extra prestaties halen uit Huge Pages en MSR. Niet iedere Synology DSM-kernel stelt deze functies beschikbaar aan containers. v1.0 probeert **geen kernelinstellingen te forceren**, omdat stabiliteit van de NAS belangrijker is dan een kleine extra hashrate.
-
-## Zelf lokaal bouwen
-
-Voor ontwikkelaars staat `docker-compose.build.yml` in deze repository.
+For a local build:
 
 ```bash
 docker compose -f docker-compose.build.yml build --no-cache
 docker compose -f docker-compose.build.yml up -d
 ```
 
-`--no-cache` is belangrijk als je `XMRIG_REF=master` gebruikt en echt de actuele upstream-broncode wilt ophalen.
+The upstream MoneroOcean commit used for the build is stored inside the image and shown in the startup log.
 
-## Transparantie
+---
 
-De Dockerfile:
+## Transparency
 
-1. clone't rechtstreeks `https://github.com/MoneroOcean/xmrig.git`;
-2. legt de gebruikte upstream Git commit vast in de image;
-3. forceert en controleert 0% XMRig donation;
-4. compileert XMRig;
-5. kopieert alleen de miner en benodigde runtime naar de uiteindelijke image.
+The Dockerfile:
 
-In het logboek wordt de gebruikte upstream commit weergegeven.
+1. fetches MoneroOcean/XMRig directly from the upstream GitHub repository;
+2. records the exact upstream commit;
+3. compiles XMRig with its original developer donation set to 0%;
+4. packages only the compiled miner and required runtime libraries.
 
-## Licentie en upstream
+`entrypoint.sh` contains the complete 1% project-fee implementation. There is no hidden wallet or hidden process.
 
-Dit project gebruikt en bouwt de MoneroOcean XMRig-fork. XMRig is GPL-3.0 software. Zie de upstream repositories voor hun auteursrechten en licentievoorwaarden.
+---
 
-**TheLion81 & Hannibal_TuTu** zijn niet verbonden aan of vertegenwoordigers van MoneroOcean of het officiële XMRig-project.
+## License and upstream projects
+
+This repository is GPL-3.0 licensed and builds the MoneroOcean fork of XMRig. Upstream copyright and license terms remain applicable.
+
+**TheLion1981 & Hannibal_TuTu are not affiliated with or representatives of MoneroOcean or the official XMRig project.**

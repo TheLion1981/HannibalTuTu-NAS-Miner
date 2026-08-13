@@ -1,19 +1,19 @@
 services:
   hannibaltutu-miner:
-    image: ghcr.io/thelion81/hannibaltutu-nas-miner:1.0.0
+    image: ghcr.io/thelion1981/hannibaltutu-nas-miner:latest
     container_name: hannibaltutu-miner
     restart: unless-stopped
     pull_policy: always
     environment:
-      # 1) VUL HIER JE EIGEN MONERO-WALLET IN
-      WALLET: "VUL_HIER_JE_MONERO_WALLET_IN"
+      # 1) YOUR OWN MONERO WALLET
+      WALLET: "YOUR_MONERO_WALLET_HERE"
 
-      # 2) Geef je NAS/miner een herkenbare naam
-      WORKER: "Mijn-NAS"
+      # 2) A recognisable name for this NAS/miner
+      WORKER: "My-NAS"
 
-      # 3) Aantal CPU-threads. Voor een DS224+ is 3 een prima startpunt.
+      # 3) CPU threads. DS224+ users can start with 3.
       THREADS: "3"
 
-      # Voor beginners: gewoon laten staan
+      # Beginner defaults: normally leave these unchanged
       POOL: "gulf.moneroocean.stream:10128"
       PRINT_TIME: "60"
