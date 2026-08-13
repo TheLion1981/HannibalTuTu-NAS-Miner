@@ -1,0 +1,17 @@
+services:
+  hannibaltutu-miner:
+    build:
+      context: .
+      args:
+        # master = bij iedere NO-CACHE rebuild de actuele MoneroOcean fork.
+        # Voor reproduceerbare builds kan hier later een tag/commit worden ingevuld.
+        XMRIG_REF: "master"
+    image: hannibaltutu-nas-miner:local
+    container_name: hannibaltutu-miner
+    restart: unless-stopped
+    environment:
+      WALLET: "VUL_HIER_JE_MONERO_WALLET_IN"
+      WORKER: "Mijn-NAS"
+      THREADS: "3"
+      POOL: "gulf.moneroocean.stream:10128"
+      PRINT_TIME: "60"
